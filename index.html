@@ -1,0 +1,673 @@
+<!doctype html>
+<html lang="it"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#163f2c"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; worker-src 'self'; manifest-src 'self'; base-uri 'none'; form-action 'none'">
+<meta name="description" content="La griglia dei turni del Tiki: pranzo, cena, dipendenti, chiusure e immagine per WhatsApp.">
+<meta name="robots" content="noindex,nofollow">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Turni Tiki">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="apple-touch-icon" href="./icon-180.png">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20108%20108%22%3E%3Cpath%20fill%3D%22%23163f2c%22%20d%3D%22M0%200h108v108H0z%22%2F%3E%3Cpath%20fill%3D%22%23f1f6e9%22%20d%3D%22M25%2029h58v53H25z%22%2F%3E%3Cpath%20fill%3D%22%23163f2c%22%20d%3D%22M31%2044h46v32H31z%22%2F%3E%3Cpath%20fill%3D%22%23f1f6e9%22%20d%3D%22M34%2053h40v7H58v13h-8V60H34z%22%2F%3E%3Cpath%20fill%3D%22%23b8e295%22%20d%3D%22M35%2021h7v15h-7zM66%2021h7v15h-7z%22%2F%3E%3C%2Fsvg%3E">
+<title>Turni Tiki</title></head><body>
+<div id="tiki-turni-preview" >
+  <style>
+    #tiki-turni-preview {padding:20px 0;color-scheme:light dark;}
+    #tiki-turni-preview * {box-sizing:border-box;}
+    #tiki-turni-preview [hidden] {display:none !important;}
+    #tiki-turni-preview .tiki-app {
+      --tiki-bg:light-dark(#fafbf8,#141d19);
+      --tiki-paper:light-dark(#ffffff,#1d2922);
+      --tiki-ink:light-dark(#172d21,#eff5eb);
+      --tiki-soft:light-dark(#526355,#b4c4b7);
+      --tiki-line:light-dark(#dce4d9,#36483c);
+      --tiki-chip:light-dark(#e9f1e4,#344b37);
+      --tiki-empty:light-dark(#f1f3ed,#233026);
+      --tiki-brand:#163f2c;
+      --tiki-brand-text:#f1f6e9;
+      --tiki-accent:light-dark(#163f2c,#b8e295);
+      width:100%;max-width:430px;margin:0 auto;overflow:hidden;
+      background:var(--tiki-bg);color:var(--tiki-ink);
+      border:1px solid var(--tiki-line);border-radius:28px;
+      box-shadow:0 12px 40px light-dark(#163f2c12,#00000030);
+      font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      font-size:14px;line-height:1.45;
+    }
+    #tiki-turni-preview button, #tiki-turni-preview input {font:inherit;}
+    #tiki-turni-preview button {color:inherit;}
+    #tiki-turni-preview .tiki-head {padding:26px 22px 23px;background:var(--tiki-brand);color:var(--tiki-brand-text);}
+    #tiki-turni-preview .tiki-brand {display:flex;align-items:center;gap:10px;font-size:12px;letter-spacing:.12em;}
+    #tiki-turni-preview .tiki-brand i {display:inline-block;width:18px;height:18px;}
+    #tiki-turni-preview h2 {font-size:29px;font-weight:500;line-height:1.15;letter-spacing:-.04em;margin:13px 0 6px;color:inherit;}
+    #tiki-turni-preview .tiki-subtitle {font-size:13px;opacity:.8;}
+    #tiki-turni-preview .tiki-content {padding:18px 14px 14px;}
+    #tiki-turni-preview .tiki-week {display:grid;grid-template-columns:44px minmax(0,1fr) 44px;align-items:center;gap:6px;margin-bottom:18px;}
+    #tiki-turni-preview .tiki-arrow {width:44px;height:44px;border:1px solid var(--tiki-line);border-radius:14px;background:var(--tiki-paper);display:flex;justify-content:center;align-items:center;}
+    #tiki-turni-preview .tiki-week-label {text-align:center;min-width:0;}
+    #tiki-turni-preview .tiki-week-title {display:block;font-weight:500;font-size:18px;letter-spacing:-.04em;}
+    #tiki-turni-preview .tiki-week-year {font-size:12px;color:var(--tiki-soft);}
+    #tiki-turni-preview .tiki-grid {border:1px solid var(--tiki-line);border-radius:17px;overflow:hidden;background:var(--tiki-paper);}
+    #tiki-turni-preview .tiki-days {display:grid;grid-template-columns:repeat(6,minmax(0,1fr));padding:11px 0;background:var(--tiki-empty);}
+    #tiki-turni-preview .tiki-day {text-align:center;min-width:0;}
+    #tiki-turni-preview .tiki-day span {display:block;font-size:11px;color:var(--tiki-soft);}
+    #tiki-turni-preview .tiki-day strong {display:block;font-size:17px;font-weight:500;margin-top:1px;}
+    #tiki-turni-preview .tiki-slot-label {padding:10px 12px 7px;font-size:12px;font-weight:500;display:flex;gap:6px;align-items:center;color:var(--tiki-soft);border-top:1px solid var(--tiki-line);}
+    #tiki-turni-preview .tiki-slots {display:grid;grid-template-columns:repeat(6,minmax(0,1fr));}
+    #tiki-turni-preview .tiki-cell {border:0;border-right:1px solid var(--tiki-line);border-radius:0;background:var(--tiki-paper);padding:7px 3px 14px;display:flex;flex-direction:column;gap:6px;align-items:stretch;justify-content:flex-start;min-width:0;min-height:118px;}
+    #tiki-turni-preview .tiki-cell:last-child {border-right:0;}
+    #tiki-turni-preview .tiki-cell:hover {background:var(--tiki-empty);}
+    #tiki-turni-preview .tiki-cell[aria-pressed="true"] {background:var(--tiki-chip);}
+    #tiki-turni-preview .tiki-name {padding:5px 1px;border-radius:7px;background:var(--tiki-chip);font-size:12px;font-weight:500;line-height:1.2;overflow-wrap:anywhere;}
+    #tiki-turni-preview .tiki-empty-name {padding:5px 0;color:var(--tiki-soft);font-size:14px;}
+    #tiki-turni-preview .tiki-cena .tiki-cell {min-height:172px;}
+    #tiki-turni-preview .tiki-hint {text-align:center;font-size:12px;color:var(--tiki-soft);margin:13px 0 18px;}
+    #tiki-turni-preview .tiki-bottom {display:flex;flex-direction:column;gap:9px;}
+    #tiki-turni-preview .tiki-copy {width:100%;min-height:46px;display:flex;align-items:center;justify-content:center;gap:8px;background:var(--tiki-paper);border:1px solid var(--tiki-line);border-radius:13px;font-weight:500;}
+    #tiki-turni-preview .tiki-share {width:100%;min-height:48px;display:flex;align-items:center;justify-content:center;gap:8px;background:var(--tiki-brand);color:var(--tiki-brand-text);border:0;border-radius:13px;font-weight:500;}
+    #tiki-turni-preview .tiki-share-preview {margin-top:14px;padding:14px;background:var(--tiki-paper);border:1px solid var(--tiki-line);border-radius:17px;}
+    #tiki-turni-preview .tiki-share-preview h3 {margin:0;font-size:16px;font-weight:500;color:var(--tiki-ink);}
+    #tiki-turni-preview .tiki-share-image {display:block;width:100%;height:auto;border-radius:9px;}
+    #tiki-turni-preview .tiki-share-caption {margin:10px 0 0;font-size:12px;color:var(--tiki-soft);}
+    #tiki-turni-preview .tiki-status {font-size:12px;color:var(--tiki-soft);text-align:center;min-height:20px;margin:10px 0 0;}
+    #tiki-turni-preview .tiki-editor {background:var(--tiki-paper);margin-top:14px;border:1px solid var(--tiki-line);border-radius:17px;padding:16px;}
+    #tiki-turni-preview .tiki-editor-head {display:flex;align-items:center;justify-content:space-between;gap:6px;}
+    #tiki-turni-preview .tiki-editor h3 {font-size:16px;margin:0;font-weight:500;color:var(--tiki-ink);}
+    #tiki-turni-preview .tiki-close {border:0;background:transparent;min-width:44px;min-height:44px;display:flex;justify-content:center;align-items:center;}
+    #tiki-turni-preview .tiki-people {display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:9px 0 15px;}
+    #tiki-turni-preview .tiki-person {display:flex;align-items:center;gap:9px;min-height:48px;padding:8px 11px;background:var(--tiki-empty);border-radius:10px;font-size:16px;}
+    #tiki-turni-preview input[type="checkbox"] {width:18px;height:18px;accent-color:var(--tiki-accent);margin:0;}
+    #tiki-turni-preview .tiki-save {width:100%;min-height:46px;background:var(--tiki-brand);color:var(--tiki-brand-text);border:0;border-radius:12px;font-weight:500;}
+    #tiki-turni-preview .tiki-app.tiki-roomy .tiki-name {font-size:14px;padding:7px 1px;}
+    @media(max-width:360px) {
+      #tiki-turni-preview .tiki-content {padding:14px 10px 12px;}
+      #tiki-turni-preview .tiki-head {padding:22px 18px;}
+      #tiki-turni-preview .tiki-week-title {font-size:16px;}
+      #tiki-turni-preview .tiki-name {font-size:11px;}
+      #tiki-turni-preview .tiki-app.tiki-roomy .tiki-name {font-size:12px;}
+    }
+  
+      html,body {margin:0;padding:0;background:#fafbf8;color-scheme:light;min-width:280px;}
+      #tiki-turni-preview {padding:0;color-scheme:light;}
+      #tiki-turni-preview .tiki-app {max-width:none;border:0;border-radius:0;box-shadow:none;}
+      #tiki-turni-preview .tiki-head {padding:17px 18px 18px;}
+      #tiki-turni-preview h2 {font-size:25px;margin-top:9px;}
+      #tiki-turni-preview .tiki-name {font-size:14px;}
+      #tiki-turni-preview .tiki-icon {display:inline-flex;align-items:center;justify-content:center;font-size:20px;line-height:1;min-width:18px;}
+      #tiki-turni-preview .tiki-arrow .tiki-icon {font-size:28px;}
+      @media(max-width:360px){#tiki-turni-preview .tiki-name {font-size:12px;}}
+      #tiki-turni-preview .tiki-tools {display:flex;gap:8px;margin:0 0 15px;}
+      #tiki-turni-preview .tiki-tools button {flex:1;min-height:44px;border:1px solid var(--tiki-line);border-radius:11px;background:var(--tiki-paper);font-weight:500;font-size:14px;}
+      #tiki-turni-preview .tiki-tools button[aria-expanded="true"] {background:var(--tiki-chip);}
+      #tiki-turni-preview .tiki-management {padding:14px;margin-bottom:16px;border:1px solid var(--tiki-line);border-radius:17px;background:var(--tiki-paper);}
+      #tiki-turni-preview .tiki-management h3 {margin:0;font-size:18px;font-weight:500;}
+      #tiki-turni-preview .tiki-management p {margin:6px 0 14px;color:var(--tiki-soft);font-size:14px;}
+      #tiki-turni-preview .tiki-field {display:block;margin-bottom:12px;font-size:14px;min-width:0;}
+      #tiki-turni-preview .tiki-field input {display:block;width:100%;min-width:0;min-height:46px;padding:9px 10px;margin-top:5px;border:1px solid var(--tiki-line);border-radius:9px;background:var(--tiki-paper);color:var(--tiki-ink);font-size:16px;}
+      #tiki-turni-preview .tiki-dates {display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px;}
+      #tiki-turni-preview .tiki-managed-row {display:flex;align-items:center;gap:10px;justify-content:space-between;padding:9px 0;border-top:1px solid var(--tiki-line);}
+      #tiki-turni-preview .tiki-managed-row span {min-width:0;overflow-wrap:anywhere;}
+      #tiki-turni-preview .tiki-row-action {flex-shrink:0;min-height:44px;padding:7px 10px;border:1px solid var(--tiki-line);border-radius:9px;background:var(--tiki-paper);font-size:14px;}
+      #tiki-turni-preview .tiki-list {margin-top:12px;}
+      #tiki-turni-preview details {margin-top:8px;color:var(--tiki-soft);}
+      #tiki-turni-preview summary {padding:10px 0;}
+      #tiki-turni-preview .tiki-form-status {font-size:14px;min-height:20px;margin-top:9px;color:var(--tiki-ink);}
+      #tiki-turni-preview .tiki-closed-cell {background:var(--tiki-empty);justify-content:center;align-items:center;gap:4px;}
+      #tiki-turni-preview .tiki-closed-word {font-size:12px;font-weight:500;overflow-wrap:anywhere;}
+      #tiki-turni-preview .tiki-cell:disabled {opacity:1;}
+      #tiki-turni-preview .tiki-person.tiki-inactive {color:var(--tiki-soft);}
+      #tiki-turni-preview .tiki-subtitle {display:none;}
+    
+
+      html {background:#163f2c;}
+      body {padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);}
+      #tiki-turni-preview .tiki-install-bar {display:flex;justify-content:flex-end;margin-bottom:10px;}
+      #tiki-turni-preview .tiki-install-button {min-height:44px;padding:8px 12px;border:1px solid var(--tiki-line);border-radius:10px;background:var(--tiki-paper);font-size:14px;}
+      #tiki-turni-preview .tiki-install-help {padding:14px;margin-bottom:14px;border:1px solid var(--tiki-line);border-radius:17px;background:var(--tiki-paper);font-size:14px;}
+      #tiki-turni-preview .tiki-install-help h3 {margin:0;font-size:18px;}
+      #tiki-turni-preview .tiki-install-help ol {margin:8px 0;padding-left:22px;}
+      #tiki-turni-preview .tiki-install-help li {margin:6px 0;}
+      #tiki-turni-preview .tiki-install-help p {margin:10px 0 0;color:var(--tiki-soft);}
+      #tiki-turni-preview .tiki-share-download {display:block;margin-top:12px;min-height:44px;padding:10px;text-align:center;border:1px solid var(--tiki-line);border-radius:9px;color:var(--tiki-ink);text-decoration:none;}
+      @media(min-width:600px){#tiki-turni-preview .tiki-app {max-width:600px;margin:0 auto;}}
+    
+  </style>
+  <section class="tiki-app" aria-label="App Turni Tiki per telefono">
+    <header class="tiki-head">
+      <div class="tiki-brand"><span class="tiki-icon" aria-hidden="true">▦</span><span>TIKI TAKA</span></div>
+      <h2>Turni della settimana</h2>
+      <div class="tiki-subtitle">Tutti al posto giusto.</div>
+    </header>
+    <div class="tiki-content">
+
+      <div class="tiki-install-bar" hidden><button type="button" class="tiki-install-button" data-action="install-help" aria-controls="tiki-install-help" aria-expanded="false">Aggiungi all’iPhone</button></div>
+      <section class="tiki-install-help" id="tiki-install-help" aria-label="Installare Turni Tiki su iPhone" hidden>
+        <div class="tiki-editor-head"><h3>Turni Tiki sulla Home</h3><button type="button" class="tiki-close" data-action="close-install" aria-label="Chiudi istruzioni">×</button></div>
+        <ol><li>Apri questo link in <strong>Safari</strong>.</li><li>Tocca <strong>Condividi</strong> e <strong>Aggiungi alla schermata Home</strong>.</li><li>Se compare <strong>Apri come app web</strong>, lascialo attivo e tocca <strong>Aggiungi</strong>.</li></ol>
+        <p>Se sei dentro WhatsApp, usa il menu per aprire il link in Safari. Poi avvia Turni Tiki dalla nuova icona e inserisci i turni lì.</p>
+      </section>
+    
+      <nav class="tiki-tools" aria-label="Gestione Tiki">
+        <button type="button" data-action="employees" aria-controls="tiki-employees" aria-expanded="false">Dipendenti</button>
+        <button type="button" data-action="closures" aria-controls="tiki-closures" aria-expanded="false">Chiusure / ferie</button>
+      </nav>
+      <section id="tiki-employees" class="tiki-management" aria-label="Gestione dipendenti" hidden>
+        <div class="tiki-editor-head"><h3>Dipendenti</h3><button type="button" class="tiki-close" data-action="close-management" aria-label="Chiudi dipendenti">×</button></div>
+        <p>Chi togli dall’elenco rimane nei turni già inseriti.</p>
+        <form id="tiki-add-employee">
+          <label class="tiki-field" for="tiki-employee-name">Nome dipendente<input id="tiki-employee-name" name="name" maxlength="32" autocomplete="off" required></label>
+          <button type="submit" class="tiki-save">Aggiungi dipendente</button>
+        </form>
+        <div class="tiki-form-status" data-status="employees" role="status" aria-live="polite"></div>
+        <div class="tiki-list" data-list="active-employees"></div>
+        <details><summary>Dipendenti rimossi</summary><div data-list="inactive-employees"></div></details>
+      </section>
+      <section id="tiki-closures" class="tiki-management" aria-label="Chiusura Tiki per ferie" hidden>
+        <div class="tiki-editor-head"><h3>Chiusure del Tiki</h3><button type="button" class="tiki-close" data-action="close-management" aria-label="Chiudi chiusure">×</button></div>
+        <p>Il periodo è incluso dal primo all’ultimo giorno. I turni restano conservati.</p>
+        <form id="tiki-add-closure">
+          <div class="tiki-dates"><label class="tiki-field" for="tiki-closure-start">Dal<input id="tiki-closure-start" name="start" type="date" required></label><label class="tiki-field" for="tiki-closure-end">Al<input id="tiki-closure-end" name="end" type="date" required></label></div>
+          <button type="submit" class="tiki-save">Chiudi Tiki per ferie</button>
+        </form>
+        <div class="tiki-form-status" data-status="closures" role="status" aria-live="polite"></div>
+        <div class="tiki-list" data-list="closures"></div>
+      </section>
+      <div class="tiki-week">
+        <button type="button" class="tiki-arrow cursor-interaction" data-action="previous" aria-label="Settimana precedente"><span class="tiki-icon" aria-hidden="true">‹</span></button>
+        <div class="tiki-week-label"><span class="tiki-week-title"></span><span class="tiki-week-year"></span></div>
+        <button type="button" class="tiki-arrow cursor-interaction" data-action="next" aria-label="Settimana successiva"><span class="tiki-icon" aria-hidden="true">›</span></button>
+      </div>
+      <div class="tiki-grid" aria-label="Turni settimanali">
+        <div class="tiki-days"></div>
+        <div class="tiki-slot-label"><span class="tiki-icon" aria-hidden="true">☀</span>Pranzo</div>
+        <div class="tiki-slots tiki-pranzo"></div>
+        <div class="tiki-slot-label"><span class="tiki-icon" aria-hidden="true">☾</span>Cena</div>
+        <div class="tiki-slots tiki-cena"></div>
+      </div>
+      <section class="tiki-editor" aria-label="Modifica turno" hidden>
+        <div class="tiki-editor-head"><h3></h3><button type="button" class="tiki-close cursor-interaction" data-action="close" aria-label="Chiudi modifica"><span class="tiki-icon" aria-hidden="true">×</span></button></div>
+        <div class="tiki-people"></div>
+        <button type="button" class="tiki-save cursor-interaction" data-action="save">Salva turno</button>
+      </section>
+      <p class="tiki-hint">Tocca una casella per scegliere chi lavora.</p>
+      <div class="tiki-bottom">
+        <button type="button" class="tiki-share cursor-interaction" data-action="share" aria-controls="tiki-share-preview" aria-expanded="false"><span class="tiki-icon" aria-hidden="true">↗</span>Condividi su WhatsApp</button>
+        <button type="button" class="tiki-copy cursor-interaction" data-action="copy"><span class="tiki-icon" aria-hidden="true">▣</span>Copia nella prossima settimana</button>
+      </div>
+      <section id="tiki-share-preview" class="tiki-share-preview" aria-label="Anteprima immagine da condividere" hidden>
+        <div class="tiki-editor-head"><h3>Immagine della settimana</h3><button type="button" class="tiki-close cursor-interaction" data-action="close-share" aria-label="Chiudi anteprima immagine"><span class="tiki-icon" aria-hidden="true">×</span></button></div>
+        <img class="tiki-share-image" alt="" width="1440" height="960">
+        <a class="tiki-share-download" download="turni-tiki.png" hidden>Salva immagine</a>
+        <p class="tiki-share-caption">Immagine della settimana selezionata</p>
+      </section>
+      <p class="tiki-status" role="status" aria-live="polite">Turni salvati sul telefono</p>
+    </div>
+  </section>
+  <script>
+(() => {
+  'use strict';
+  const root = document.getElementById('tiki-turni-preview');
+  const query = selector => root.querySelector(selector);
+  const days = ['Mar', 'Mer', 'Gio', 'Ven', 'Sab', 'Dom'];
+  const fullDays = ['Martedì', 'Mercoledì', 'Giovedì', 'Venerdì', 'Sabato', 'Domenica'];
+  const slots = ['pranzo', 'cena'];
+  const origin = Date.UTC(2026, 9, 12);
+  const key = 'turni-tiki-v1';
+  const native = window.TikiNative;
+  const emptyWeek = () => ({pranzo: Array.from({length: 6}, () => []), cena: Array.from({length: 6}, () => [])});
+  const clone = value => JSON.parse(JSON.stringify(value));
+  const nameKey = name => name.normalize('NFKC').trim().replace(/\s+/gu, ' ').toLocaleLowerCase('it');
+  const newId = prefix => prefix + '-' + (window.crypto && crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36) + '-' + Math.random().toString(36).slice(2));
+  const date = (day, offset = state.offset) => new Date(origin + (offset * 7 + day) * 86400000);
+  const iso = value => value.toISOString().slice(0, 10);
+  const shortDate = value => value.toLocaleDateString('it-IT', {day: 'numeric', month: 'numeric', timeZone: 'UTC'});
+  const displayDate = value => new Date(value + 'T00:00:00Z').toLocaleDateString('it-IT', {day: 'numeric', month: 'numeric', year: 'numeric', timeZone: 'UTC'});
+  const validDate = value => typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value) && !Number.isNaN(Date.parse(value + 'T00:00:00Z')) && iso(new Date(value + 'T00:00:00Z')) === value;
+  const defaultEmployees = ['Api', 'Silvio', 'Nai', 'Gegio'].map((name, index) => ({id: 'person-' + index, name, active: true}));
+  const example = {
+    pranzo: [['Api', 'Silvio'], ['Silvio', 'Nai'], ['Api', 'Nai'], ['Api', 'Silvio'], [], []],
+    cena: [['Gegio', 'Api', 'Silvio'], ['Gegio', 'Nai', 'Silvio'], ['Gegio', 'Nai', 'Api'], ['Gegio', 'Api', 'Silvio', 'Nai'], ['Gegio', 'Api', 'Silvio', 'Nai'], ['Gegio', 'Api', 'Silvio', 'Nai']]
+  };
+  const defaults = () => ({schema: 2, offset: 0, employees: clone(defaultEmployees), closures: [], weeks: {'0': Object.fromEntries(slots.map(slot => [slot, example[slot].map(names => names.map(name => defaultEmployees.find(person => person.name === name).id))]))}});
+  let state, readOnly = false, selection = null;
+
+  function validateWeeks(weeks, allowed) {
+    if (!weeks || typeof weeks !== 'object' || Array.isArray(weeks)) throw new Error('weeks');
+    for (const [weekKey, week] of Object.entries(weeks)) {
+      if (!/^-?\d+$/.test(weekKey) || !Number.isSafeInteger(Number(weekKey)) || !week || typeof week !== 'object') throw new Error('week');
+      for (const slot of slots) {
+        if (!Array.isArray(week[slot]) || week[slot].length !== 6) throw new Error('days');
+        for (const names of week[slot]) {
+          if (!Array.isArray(names) || names.some(name => typeof name !== 'string' || !name.length || name.length > 160 || (allowed && !allowed.has(name)))) throw new Error('names');
+        }
+      }
+    }
+  }
+
+  function loadStore(raw) {
+    const saved = JSON.parse(raw);
+    if (!saved || !Number.isInteger(saved.offset) || Math.abs(saved.offset) > 520) throw new Error('offset');
+    if (saved.schema === 1) {
+      validateWeeks(saved.weeks);
+      const employees = clone(defaultEmployees);
+      const lookup = new Map(employees.map(person => [person.name, person.id]));
+      const weeks = {};
+      for (const [weekKey, week] of Object.entries(saved.weeks)) {
+        weeks[weekKey] = emptyWeek();
+        for (const slot of slots) {
+          weeks[weekKey][slot] = week[slot].map(names => names.map(name => {
+            if (!lookup.has(name)) {
+              const id = 'legacy-' + employees.length;
+              lookup.set(name, id);
+              employees.push({id, name, active: true});
+            }
+            return lookup.get(name);
+          }));
+        }
+      }
+      return {schema: 2, offset: saved.offset, weeks, employees, closures: []};
+    }
+    if (saved.schema !== 2 || !Array.isArray(saved.employees) || !Array.isArray(saved.closures)) throw new Error('schema');
+    const ids = new Set();
+    for (const person of saved.employees) {
+      if (!person || typeof person.id !== 'string' || !person.id.length || ids.has(person.id) || typeof person.name !== 'string' || !person.name.trim() || person.name.length > 160 || typeof person.active !== 'boolean') throw new Error('employee');
+      ids.add(person.id);
+    }
+    validateWeeks(saved.weeks, ids);
+    const closureIds = new Set();
+    for (const period of saved.closures) {
+      if (!period || typeof period.id !== 'string' || !period.id.length || closureIds.has(period.id) || !validDate(period.start) || !validDate(period.end) || period.start > period.end) throw new Error('closure');
+      closureIds.add(period.id);
+    }
+    return saved;
+  }
+
+  function writeStore(candidate) {
+    const json = JSON.stringify(candidate);
+    if (json.length > 2000000) throw new Error('size');
+    if (native && typeof native.save === 'function') {
+      if (native.save(json) !== true) throw new Error('save');
+    } else localStorage.setItem(key, json);
+  }
+
+  function status(message, section) {
+    query('.tiki-status').textContent = message;
+    if (section) query('[data-status="' + section + '"]').textContent = message;
+  }
+
+  function commit(candidate, message, section) {
+    if (readOnly) { status('Archivio non leggibile: i dati conservati non sono stati modificati.', section); return false; }
+    try { writeStore(candidate); }
+    catch (_) { status('Salvataggio non riuscito. Nessuna modifica applicata: riprova.', section); return false; }
+    state = candidate;
+    render();
+    status(message || 'Turni salvati sul telefono', section);
+    return true;
+  }
+
+  try {
+    const raw = native && typeof native.load === 'function' ? native.load() : localStorage.getItem(key);
+    state = raw ? loadStore(raw) : defaults();
+    if (!raw || JSON.parse(raw).schema === 1) {
+      if (raw && !native) localStorage.setItem(key + '-before-schema-2', raw);
+      try { writeStore(state); }
+      catch (_) { status('Salvataggio non riuscito. I turni precedenti sono conservati: riprova.'); }
+    }
+  } catch (_) {
+    state = {schema: 2, offset: 0, weeks: {}, employees: [], closures: []};
+    readOnly = true;
+    status('Archivio non leggibile: i dati conservati non sono stati modificati.');
+  }
+
+  const week = (offset = state.offset) => state.weeks[String(offset)] || emptyWeek();
+  const person = id => state.employees.find(item => item.id === id);
+  const closure = day => state.closures.find(period => period.start <= day && period.end >= day);
+
+  function closeEditor() {
+    selection = null;
+    query('.tiki-editor').hidden = true;
+    root.querySelectorAll('.tiki-cell').forEach(cell => cell.setAttribute('aria-pressed', 'false'));
+  }
+
+  function closeShare() {
+    query('.tiki-share-preview').hidden = true;
+    query('[data-action="share"]').setAttribute('aria-expanded', 'false');
+  }
+
+  function closeManagement() {
+    for (const type of ['employees', 'closures']) {
+      query('#tiki-' + type).hidden = true;
+      query('[data-action="' + type + '"]').setAttribute('aria-expanded', 'false');
+    }
+  }
+
+  window.tikiClosePanels = () => {
+    const visible = !query('.tiki-editor').hidden || !query('.tiki-share-preview').hidden || !query('#tiki-employees').hidden || !query('#tiki-closures').hidden;
+    closeEditor(); closeShare(); closeManagement();
+    return visible;
+  };
+
+  function openManagement(type) {
+    const wasOpen = !query('#tiki-' + type).hidden;
+    window.tikiClosePanels();
+    if (wasOpen) return;
+    query('#tiki-' + type).hidden = false;
+    query('[data-action="' + type + '"]').setAttribute('aria-expanded', 'true');
+    if (type === 'closures') {
+      query('#tiki-closure-start').value = iso(date(0));
+      query('#tiki-closure-end').value = iso(date(6));
+    }
+    query('#tiki-' + type).scrollIntoView({block: 'start', behavior: 'smooth'});
+  }
+
+  function managementRow(label, action, id, buttonText, ariaLabel) {
+    const row = document.createElement('div');
+    row.className = 'tiki-managed-row';
+    const name = document.createElement('span');
+    name.textContent = label;
+    const button = document.createElement('button');
+    button.type = 'button'; button.className = 'tiki-row-action';
+    button.dataset.action = action; button.dataset.id = id;
+    button.textContent = buttonText; button.setAttribute('aria-label', ariaLabel);
+    button.disabled = readOnly;
+    row.append(name, button);
+    return row;
+  }
+
+  function renderManagement() {
+    for (const active of [true, false]) {
+      const list = query('[data-list="' + (active ? 'active' : 'inactive') + '-employees"]');
+      list.replaceChildren();
+      const employees = state.employees.filter(item => item.active === active);
+      for (const employee of employees) list.append(managementRow(employee.name, active ? 'remove-employee' : 'restore-employee', employee.id, active ? 'Togli' : 'Riattiva', (active ? 'Togli ' : 'Riattiva ') + employee.name));
+      if (!employees.length) list.textContent = active ? 'Nessun dipendente: aggiungi il primo nome.' : 'Nessun dipendente rimosso.';
+    }
+    const list = query('[data-list="closures"]');
+    list.replaceChildren();
+    for (const period of [...state.closures].sort((a, b) => a.start.localeCompare(b.start))) {
+      const label = displayDate(period.start) + ' – ' + displayDate(period.end) + ' · Ferie';
+      list.append(managementRow(label, 'remove-closure', period.id, 'Riapri', 'Riapri Tiki ' + label));
+    }
+    if (!state.closures.length) list.textContent = 'Nessuna chiusura programmata.';
+  }
+
+  function render() {
+    query('.tiki-week-title').textContent = shortDate(date(0)) + ' – ' + shortDate(date(6));
+    query('.tiki-week-year').textContent = date(0).getUTCFullYear() === date(6).getUTCFullYear() ? date(0).getUTCFullYear() : date(0).getUTCFullYear() + ' / ' + date(6).getUTCFullYear();
+    query('[data-action="previous"]').disabled = state.offset <= -520;
+    query('[data-action="next"]').disabled = state.offset >= 520;
+    const headers = query('.tiki-days');
+    headers.replaceChildren();
+    days.forEach((name, index) => {
+      const item = document.createElement('div'); item.className = 'tiki-day';
+      const label = document.createElement('span'); label.textContent = name;
+      const number = document.createElement('strong'); number.textContent = date(index + 1).getUTCDate();
+      item.append(label, number); headers.append(item);
+    });
+    for (const slot of slots) {
+      const row = query('.tiki-' + slot); row.replaceChildren();
+      week()[slot].forEach((ids, index) => {
+        const cell = document.createElement('button'); cell.type = 'button'; cell.className = 'tiki-cell';
+        cell.dataset.slot = slot; cell.dataset.day = index;
+        cell.setAttribute('aria-pressed', String(!!selection && selection.slot === slot && selection.day === index));
+        const closed = closure(iso(date(index + 1)));
+        if (closed) {
+          cell.classList.add('tiki-closed-cell'); cell.disabled = true;
+          const word = document.createElement('span'); word.className = 'tiki-closed-word'; word.textContent = 'Chiuso';
+          const reason = document.createElement('span'); reason.className = 'tiki-closed-word'; reason.textContent = 'Ferie';
+          cell.append(word, reason);
+        } else if (ids.length) {
+          for (const id of ids) {
+            const chip = document.createElement('span'); chip.className = 'tiki-name'; chip.textContent = person(id).name; cell.append(chip);
+          }
+        } else {
+          const empty = document.createElement('span'); empty.className = 'tiki-empty-name'; empty.textContent = '+'; cell.append(empty);
+        }
+        cell.setAttribute('aria-label', fullDays[index] + ' ' + shortDate(date(index + 1)) + ', ' + slot + ': ' + (closed ? 'Tiki chiuso per ferie' : ids.length ? ids.map(id => person(id).name).join(', ') : 'nessun dipendente'));
+        cell.disabled = cell.disabled || readOnly;
+        row.append(cell);
+      });
+    }
+    renderManagement();
+    if (readOnly) root.querySelectorAll('form input, form button, [data-action="copy"]').forEach(input => { input.disabled = true; });
+  }
+
+  function openEditor(slot, day) {
+    if (readOnly || closure(iso(date(day + 1)))) return;
+    closeManagement(); closeShare();
+    selection = {slot, day};
+    const current = week()[slot][day];
+    query('.tiki-editor h3').textContent = fullDays[day] + ' ' + shortDate(date(day + 1)) + ' · ' + (slot === 'pranzo' ? 'Pranzo' : 'Cena');
+    const list = query('.tiki-people'); list.replaceChildren();
+    for (const employee of state.employees.filter(item => item.active || current.includes(item.id))) {
+      const label = document.createElement('label'); label.className = 'tiki-person' + (employee.active ? '' : ' tiki-inactive');
+      const input = document.createElement('input'); input.type = 'checkbox'; input.value = employee.id; input.checked = current.includes(employee.id);
+      const name = document.createElement('span'); name.textContent = employee.name + (employee.active ? '' : ' (rimosso)');
+      label.append(input, name); list.append(label);
+    }
+    if (!list.children.length) list.textContent = 'Aggiungi un dipendente dal pulsante Dipendenti.';
+    query('.tiki-editor').hidden = false;
+    root.querySelectorAll('.tiki-cell').forEach(cell => cell.setAttribute('aria-pressed', String(cell.dataset.slot === slot && Number(cell.dataset.day) === day)));
+    query('.tiki-editor').scrollIntoView({block: 'center', behavior: 'smooth'});
+  }
+
+  query('#tiki-add-employee').addEventListener('submit', event => {
+    event.preventDefault();
+    const input = query('#tiki-employee-name');
+    const name = input.value.normalize('NFKC').trim().replace(/\s+/gu, ' ');
+    if (!name || name.length > 32) { status('Inserisci un nome da 1 a 32 caratteri.', 'employees'); return; }
+    const duplicate = state.employees.find(item => nameKey(item.name) === nameKey(name));
+    if (duplicate) { status(duplicate.active ? 'Questo dipendente è già nell’elenco.' : 'Questo nome è tra i rimossi: premi Riattiva.', 'employees'); return; }
+    const candidate = clone(state);
+    candidate.employees.push({id: newId('person'), name, active: true});
+    if (commit(candidate, name + ' aggiunto.', 'employees')) { input.value = ''; input.focus(); }
+  });
+
+  query('#tiki-add-closure').addEventListener('submit', event => {
+    event.preventDefault();
+    const start = query('#tiki-closure-start').value, end = query('#tiki-closure-end').value;
+    if (!validDate(start) || !validDate(end) || start > end) { status('Scegli un periodo valido: la data “Al” deve seguire o coincidere con “Dal”.', 'closures'); return; }
+    if (state.closures.some(period => start <= period.end && end >= period.start)) { status('Queste date sono già comprese in una chiusura. Riapri quel periodo per modificarlo.', 'closures'); return; }
+    const candidate = clone(state);
+    candidate.closures.push({id: newId('closure'), start, end, reason: 'Ferie'});
+    if (commit(candidate, 'Tiki chiuso dal ' + displayDate(start) + ' al ' + displayDate(end) + '.', 'closures')) closeShare();
+  });
+
+  root.addEventListener('click', event => {
+    const button = event.target.closest('button');
+    if (!button || button.disabled) return;
+    if (button.dataset.slot) { openEditor(button.dataset.slot, Number(button.dataset.day)); return; }
+    const action = button.dataset.action;
+    if (action === 'employees' || action === 'closures') openManagement(action);
+    else if (action === 'close-management') closeManagement();
+    else if (action === 'close') closeEditor();
+    else if (action === 'close-share') closeShare();
+    else if (action === 'save' && selection) {
+      const candidate = clone(state), current = clone(week());
+      const checked = new Set([...root.querySelectorAll('.tiki-people input:checked')].map(input => input.value));
+      const oldOrder = current[selection.slot][selection.day];
+      current[selection.slot][selection.day] = [...oldOrder.filter(id => checked.has(id)), ...state.employees.filter(employee => checked.has(employee.id) && !oldOrder.includes(employee.id)).map(employee => employee.id)];
+      candidate.weeks[String(state.offset)] = current;
+      if (commit(candidate, 'Turno salvato.')) closeEditor();
+    } else if (action === 'previous' || action === 'next') {
+      const candidate = clone(state); candidate.offset += action === 'next' ? 1 : -1;
+      if (Math.abs(candidate.offset) <= 520 && commit(candidate)) window.tikiClosePanels();
+    } else if (action === 'remove-employee' || action === 'restore-employee') {
+      const candidate = clone(state), employee = candidate.employees.find(item => item.id === button.dataset.id);
+      if (!employee) return;
+      employee.active = action === 'restore-employee';
+      if (commit(candidate, employee.name + (employee.active ? ' riattivato.' : ' tolto dall’elenco. I suoi turni restano conservati.'), 'employees')) { closeEditor(); closeShare(); }
+    } else if (action === 'remove-closure') {
+      const candidate = clone(state); candidate.closures = candidate.closures.filter(period => period.id !== button.dataset.id);
+      if (commit(candidate, 'Periodo riaperto. I turni sono di nuovo visibili.', 'closures')) closeShare();
+    } else if (action === 'copy') {
+      if (state.offset >= 520) { status('Hai raggiunto l’ultima settimana disponibile.'); return; }
+      const target = state.offset + 1;
+      if (slots.some(slot => week(target)[slot].some(ids => ids.length))) { status('La prossima settimana contiene già turni: non è stata sovrascritta.'); return; }
+      const candidate = clone(state);
+      candidate.weeks[String(target)] = clone(week());
+      candidate.offset = target;
+      if (commit(candidate, 'Turni copiati nella settimana successiva.')) window.tikiClosePanels();
+    } else if (action === 'share') shareWeek();
+  });
+
+  document.addEventListener('keydown', event => { if (event.key === 'Escape') window.tikiClosePanels(); });
+
+  function color(name) {
+    const probe = document.createElement('span'); probe.style.color = 'var(--tiki-' + name + ')';
+    query('.tiki-app').append(probe);
+    const value = getComputedStyle(probe).color; probe.remove(); return value;
+  }
+
+  function imageForWeek() {
+    const canvas = document.createElement('canvas'); canvas.width = 1440; canvas.height = 960;
+    const ctx = canvas.getContext('2d');
+    const colors = Object.fromEntries(['bg', 'paper', 'ink', 'soft', 'line', 'empty', 'brand', 'brand-text'].map(name => [name, color(name)]));
+    const text = (value, x, y, size, fill, align = 'left', maxWidth) => {
+      ctx.font = '500 ' + size + 'px system-ui, sans-serif'; ctx.fillStyle = fill; ctx.textAlign = align; ctx.textBaseline = 'middle';
+      if (maxWidth) ctx.fillText(value, x, y, maxWidth); else ctx.fillText(value, x, y);
+    };
+    ctx.fillStyle = colors.bg; ctx.fillRect(0, 0, 1440, 960);
+    ctx.fillStyle = colors.brand; ctx.fillRect(0, 0, 1440, 180);
+    text('TIKI TAKA · TURNI', 48, 72, 60, colors['brand-text']);
+    text(shortDate(date(0)) + ' – ' + shortDate(date(6)) + ' · ' + query('.tiki-week-year').textContent, 48, 142, 44, colors['brand-text']);
+    const x = 42, y = 216, width = 1356, col = width / 6;
+    ctx.fillStyle = colors.paper; ctx.fillRect(x, y, width, 700);
+    ctx.fillStyle = colors.empty; ctx.fillRect(x, y, width, 90);
+    days.forEach((name, index) => text(name + ' ' + date(index + 1).getUTCDate(), x + col * (index + 0.5), 260, 39, colors.ink, 'center'));
+    const descriptions = [];
+    for (const [slot, labelY, rowY] of [['pranzo', 306, 366], ['cena', 611, 671]]) {
+      ctx.fillStyle = colors.empty; ctx.fillRect(x, labelY, width, 60);
+      text(slot === 'pranzo' ? 'PRANZO' : 'CENA', x + 18, labelY + 30, 30, colors.soft);
+      week()[slot].forEach((ids, index) => {
+        const closed = closure(iso(date(index + 1)));
+        const names = ids.map(id => person(id).name);
+        descriptions.push(fullDays[index] + ' ' + shortDate(date(index + 1)) + ' ' + slot + ': ' + (closed ? 'Chiuso per ferie' : names.length ? names.join(', ') : 'nessun dipendente'));
+        if (closed) {
+          ctx.fillStyle = colors.empty; ctx.fillRect(x + index * col, rowY, col, 245);
+          text('CHIUSO', x + col * (index + 0.5), rowY + 97, 38, colors.ink, 'center');
+          text('Ferie', x + col * (index + 0.5), rowY + 145, 30, colors.soft, 'center');
+        } else {
+          const count = Math.max(4, names.length);
+          const lineHeight = Math.min(54, 217 / count);
+          const font = Math.min(46, lineHeight * 0.82);
+          if (!names.length) text('—', x + col * (index + 0.5), rowY + 50, 40, colors.soft, 'center');
+          names.forEach((name, item) => text(name, x + col * (index + 0.5), rowY + 18 + lineHeight * (item + 0.5), font, colors.ink, 'center', col - 24));
+        }
+      });
+    }
+    ctx.strokeStyle = colors.line; ctx.lineWidth = 2;
+    ctx.strokeRect(x, y, width, 700);
+    [306, 366, 611, 671].forEach(line => { ctx.beginPath(); ctx.moveTo(x, line); ctx.lineTo(x + width, line); ctx.stroke(); });
+    for (let index = 1; index < 6; index++) {
+      for (const [top, bottom] of [[216, 306], [366, 611], [671, 916]]) {
+        ctx.beginPath(); ctx.moveTo(x + col * index, top); ctx.lineTo(x + col * index, bottom); ctx.stroke();
+      }
+    }
+    return {url: canvas.toDataURL('image/png'), alt: descriptions.join('. ')};
+  }
+
+  async function shareWeek() {
+    closeEditor(); closeManagement();
+    const image = imageForWeek();
+    const caption = 'Tiki Taka · Turni ' + shortDate(date(0)) + ' – ' + shortDate(date(6)) + ' · ' + query('.tiki-week-year').textContent;
+    const filename = 'turni-' + iso(date(0)).replace(/-/g, '');
+    const preview = query('.tiki-share-image'); preview.src = image.url; preview.alt = image.alt;
+    query('.tiki-share-caption').textContent = caption;
+    query('.tiki-share-preview').hidden = false;
+    query('[data-action="share"]').setAttribute('aria-expanded', 'true');
+    try {
+      if (native && typeof native.shareImage === 'function') {
+        status(native.shareImage(image.url, caption, filename) ? 'Scegli WhatsApp e la chat nella schermata di condivisione.' : 'Impossibile aprire la condivisione. Riprova.');
+        return;
+      }
+      const binary = atob(image.url.split(',')[1]);
+      const file = new File([Uint8Array.from(binary, char => char.charCodeAt(0))], filename + '.png', {type: 'image/png'});
+      if (navigator.canShare && navigator.canShare({files: [file]})) {
+        await navigator.share({files: [file], title: 'Turni Tiki', text: caption});
+        status('Immagine pronta per la condivisione.');
+      } else {
+        const link = document.createElement('a'); link.href = image.url; link.download = filename + '.png'; link.click();
+        status('Immagine scaricata: allegala alla chat WhatsApp.');
+      }
+    } catch (error) { status(error.name === 'AbortError' ? 'Condivisione annullata.' : 'Condivisione non riuscita. Puoi riprovare.'); }
+  }
+
+  if (document.modelContext?.registerTool) {
+    const lifetime = new AbortController();
+    const register = tool => {
+      try { Promise.resolve(document.modelContext.registerTool(tool, {signal:lifetime.signal})).catch(() => {}); }
+      catch (_) { /* Optional browser interface is unavailable on ordinary Safari. */ }
+    };
+    register({
+      name:'get_tiki_week', title:'Leggi la settimana Tiki',
+      description:'Legge i turni e le chiusure della settimana attualmente visibile, senza modificarli.',
+      inputSchema:{type:'object',properties:{},additionalProperties:false},
+      annotations:{readOnlyHint:true,untrustedContentHint:true},
+      execute(input) {
+        if (!input || typeof input !== 'object' || Array.isArray(input) || Object.keys(input).length) throw new Error('Nessun parametro previsto.');
+        return {from:iso(date(0)),to:iso(date(6)),days:days.map((name,index) => ({date:iso(date(index+1)),closed:!!closure(iso(date(index+1))),pranzo:week().pranzo[index].map(id=>person(id).name),cena:week().cena[index].map(id=>person(id).name)}))};
+      }
+    });
+    register({
+      name:'start_tiki_shift_edit', title:'Apri modifica turno Tiki',
+      description:'Apre l’editor del pranzo o della cena del giorno selezionato. Non cambia né salva assegnazioni.',
+      inputSchema:{type:'object',properties:{slot:{type:'string',enum:['pranzo','cena']},day:{type:'integer',minimum:0,maximum:5}},required:['slot','day'],additionalProperties:false},
+      annotations:{readOnlyHint:false,untrustedContentHint:false},
+      execute(input) {
+        if (!input || !slots.includes(input.slot) || !Number.isInteger(input.day) || input.day<0 || input.day>5 || Object.keys(input).some(key=>!['slot','day'].includes(key))) throw new Error('Turno non valido.');
+        if (readOnly || closure(iso(date(input.day+1)))) throw new Error('Questo turno non è modificabile.');
+        openEditor(input.slot,input.day);
+        return {opened:true,date:iso(date(input.day+1)),slot:input.slot,saved:false};
+      }
+    });
+    window.addEventListener('pagehide',()=>lifetime.abort(),{once:true});
+  }
+
+  render();
+})();
+
+(() => {
+  'use strict';
+  const root = document.getElementById('tiki-turni-preview');
+  const ios = /iPhone|iPad|iPod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  const standalone = navigator.standalone === true || matchMedia('(display-mode: standalone)').matches;
+  const bar = root.querySelector('.tiki-install-bar');
+  const help = root.querySelector('.tiki-install-help');
+  const helpButton = root.querySelector('[data-action="install-help"]');
+  bar.hidden = !ios || standalone;
+  const close = () => { help.hidden = true; helpButton.setAttribute('aria-expanded', 'false'); };
+  root.addEventListener('click', event => {
+    const button = event.target.closest('button');
+    if (button?.dataset.action === 'install-help') {
+      const open = help.hidden;
+      help.hidden = !open; helpButton.setAttribute('aria-expanded', String(open));
+    } else if (button?.dataset.action === 'close-install') close();
+  });
+  const previousClose = window.tikiClosePanels;
+  window.tikiClosePanels = () => {
+    const visible = !help.hidden;
+    close();
+    return previousClose() || visible;
+  };
+  document.addEventListener('keydown', event => { if (event.key === 'Escape') close(); });
+  const image = root.querySelector('.tiki-share-image');
+  const download = root.querySelector('.tiki-share-download');
+  new MutationObserver(() => {
+    if (!image.src.startsWith('data:image/png;base64,')) return;
+    download.href = image.src;
+    download.download = 'turni-tiki.png';
+    download.hidden = false;
+  }).observe(image, {attributes:true, attributeFilter:['src']});
+  if ('serviceWorker' in navigator && window.isSecureContext) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js', {scope:'./'}).catch(() => {
+        // Online use remains available; never erase locally saved turns when offline setup fails.
+      });
+    });
+  }
+})();
+
+  </script>
+</div>
+
+</body></html>
